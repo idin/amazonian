@@ -1,2 +1,6 @@
 
 \.idea/
+
+amazonian/__pycache__/
+
+amazonian/redshift/__pycache__/
