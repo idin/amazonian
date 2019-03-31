@@ -1,5 +1,5 @@
 from .BasicRedshift import BasicRedshift
-from .Table_and_View import Table, View
+from .Table_and_View import Table
 
 class Schema:
 	def __init__(self, name, redshift, echo=None):
@@ -28,6 +28,9 @@ class Schema:
 
 	@property
 	def database(self):
+		"""
+		:rtype: .Redshift.Redshift
+		"""
 		return self._redshift
 
 	@property
@@ -53,17 +56,6 @@ class Schema:
 	@property
 	def table_list(self):
 		return [table for _, table in self.tables.items()]
-
-	@property
-	def view_list(self):
-		return [view for _, view in self.views.items()]
-
-
-	@property
-	def views(self):
-		if self._views is None:
-			self._views = {name:View(name=name, schema=self) for name in self.view_names}
-		return self._views
 
 	@property
 	def name(self):
