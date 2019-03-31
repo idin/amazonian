@@ -14,13 +14,33 @@ class BasicRedshift:
 		:type user_id: str
 		:type password: str
 		"""
-		engine_string = 'postgresql://' + user_id + ':' + password + '@' + server + ':' + port + '/' + database
 		self._server = server
 		self._port = port
-		self._engine = create_engine(engine_string)
 		self._database = database
 		self._user_id = user_id
 		self._password = password
+		self._engine = create_engine(self._engine_string)
+
+	def __getstate__(self):
+		return {
+			'server': self._server,
+			'port': self._port,
+			'database': self._database,
+			'user_id': self._user_id,
+			'password': self._password
+		}
+
+	def __setstate__(self, state):
+		self._server = state['server']
+		self._port = state['port']
+		self._database = state['database']
+		self._user_id = state['user_id']
+		self._password = state['password']
+		self._engine = create_engine(self._engine_string)
+
+	@property
+	def _engine_string(self):
+		return f'postgresql://{self._user_id}:{self._password}@{self._server}:{self._port}/{self._database}'
 
 	@property
 	def name(self):

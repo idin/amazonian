@@ -2,6 +2,7 @@ class Column:
 	def __init__(self, name, table, echo=None):
 		self._name = name
 		self._table = table
+		self._value_counts = None
 		if echo is None:
 			self._echo = self.table.echo
 		else:
@@ -25,17 +26,18 @@ class Column:
 
 	@property
 	def value_counts(self):
-		result = self.table.schema.database.get_dataframe(
-			echo=self.echo,
-			query=(
-				f'SELECT \'{self.table.schema.name}\' AS "schema", \'{self.table.name}\' AS "table", '
-				f'\'{self.name}\' AS "column", "{self.name}" AS "value", ' 
-				f'COUNT(*) AS "count" FROM {self.table.schema.name}.{self.table.name} ' 
-				f'GROUP BY "{self.name}" ORDER BY "count" DESC '
+		if self._value_counts is None:
+			self._value_counts = self.table.schema.database.get_dataframe(
+				echo=self.echo,
+				query=(
+					f'SELECT \'{self.table.schema.name}\' AS "schema", \'{self.table.name}\' AS "table", '
+					f'\'{self.name}\' AS "column", "{self.name}" AS "value", ' 
+					f'COUNT(*) AS "count" FROM {self.table.schema.name}.{self.table.name} ' 
+					f'GROUP BY "{self.name}" ORDER BY "count" DESC '
+				)
 			)
-		)
 		#result['ratio'] = result['count'] / self.table.num_rows
-		return result
+		return self._value_counts
 
 	def __str__(self):
 		return f'"{self.name}" column'
