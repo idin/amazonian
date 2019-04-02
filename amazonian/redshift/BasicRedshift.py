@@ -287,7 +287,8 @@ class BasicRedshift:
 
 		the_query += order_query
 
-		return self.get_dataframe(the_query, echo=echo)
+		result = self.get_dataframe(the_query, echo=echo)
+		return result[~result['table'].str.startswith('#')]
 
 	@property
 	def columns_query(self):
@@ -352,4 +353,5 @@ class BasicRedshift:
 		return the_query
 
 	def get_tables_data(self, schema=None, echo=0):
-		return self.get_dataframe(query=self.get_tables_data_query(schema=schema), echo=echo)
+		result = self.get_dataframe(query=self.get_tables_data_query(schema=schema), echo=echo)
+		return result[~result['table'].str.startswith('#')]

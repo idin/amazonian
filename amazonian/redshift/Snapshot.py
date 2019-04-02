@@ -1,6 +1,6 @@
 from datetime import datetime
 from pandas import DataFrame, concat
-
+import numpy as np
 
 class Snapshot:
 	def __init__(self, database):
@@ -50,19 +50,19 @@ class Snapshot:
 		:type other: Snapshot
 		:rtype SnapshotDifference
 		"""
-		return SnapshotDifference(snapshot1=self, snapshot2=other)
+		return SnapshotDifference(old_snapshot=other, new_snapshot=self)
 
 
 class SnapshotDifference:
-	def __init__(self, snapshot1, snapshot2):
+	def __init__(self, old_snapshot, new_snapshot):
 		"""
-		:type snapshot1: Snapshot
-		:type snapshot2: Snapshot
+		:type old_snapshot: Snapshot
+		:type new_snapshot: Snapshot
 		"""
 
 		column_comparison_cols = ['schema', 'table', 'column']
-		columns1 = snapshot1.column_data[column_comparison_cols]
-		columns2 = snapshot2.column_data[column_comparison_cols]
+		columns1 = old_snapshot.column_data[column_comparison_cols]
+		columns2 = new_snapshot.column_data[column_comparison_cols]
 		self._column_comparisons = columns1.merge(
 			right=columns2, on=column_comparison_cols, how='outer', indicator='indicator', validate='one_to_one'
 		)
@@ -81,8 +81,8 @@ class SnapshotDifference:
 
 		table_comp_same = ['schema', 'table']
 		table_comparison_different_cols = ['table_id', 'num_rows', 'num_columns', 'mbytes']
-		tables1 = snapshot1.table_data[table_comp_same + table_comparison_different_cols]
-		tables2 = snapshot2.table_data[table_comp_same + table_comparison_different_cols]
+		tables1 = old_snapshot.table_data[table_comp_same + table_comparison_different_cols]
+		tables2 = new_snapshot.table_data[table_comp_same + table_comparison_different_cols]
 		self._table_comparisons = tables1.merge(
 			right=tables2, on=table_comp_same, how='outer', indicator='indicator', validate='one_to_one',
 			suffixes=['_1', '_2']
@@ -123,11 +123,15 @@ class SnapshotDifference:
 		table_changes = table_changes.merge(
 			right=column_changes, on=['schema', 'table'], how='outer', validate='one_to_one'
 		)
-		self.table_changes = table_changes[
-			(table_changes['indicator'] != 'same_table') |
-			(table_changes['num_new_columns'] > 0) |
-			(table_changes['num_missing_columns'] > 0)
-		]
+
+		table_changes['indicator'] = np.where(
+			(
+				(table_changes['num_new_columns'] > 0) | (table_changes['num_new_columns'] > 0)
+			) & (table_changes['indicator'] == 'same_table'),
+			'table_changed',
+			table_changes['indicator']
+		)
+		self.table_changes = table_changes
 
 
 
