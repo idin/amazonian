@@ -1,3 +1,6 @@
+from .Metadata import Metadata
+from pandas import DataFrame
+
 class Column:
 	def __init__(self, name, table, echo=None):
 		self._name = name
@@ -7,10 +10,40 @@ class Column:
 			self._echo = self.table.echo
 		else:
 			self._echo = echo
+		self._metadata = None
+
+	def reset(self):
+		self._value_counts = None
 
 	@property
 	def name(self):
 		return self._name
+
+	@property
+	def metadata(self):
+		"""
+		:rtype: Metadata
+		"""
+		return self._metadata
+
+	@metadata.setter
+	def metadata(self, metadata):
+		"""
+		:type metadata: dict or Metadata
+		"""
+		if self._metadata is None:
+			if not isinstance(metadata, Metadata):
+				metadata = Metadata(**metadata)
+			self._metadata = metadata
+		else:
+			self._metadata.update(metadata, inplace=True)
+
+	@property
+	def all_metadata(self):
+		"""
+		:rtype: Metadata
+		"""
+		return self.table.all_metadata.update(self.metadata, inplace=False)
 
 	@property
 	def echo(self):
@@ -26,6 +59,9 @@ class Column:
 
 	@property
 	def value_counts(self):
+		"""
+		:rtype: DataFrame
+		"""
 		if self._value_counts is None:
 			self._value_counts = self.table.schema.database.get_dataframe(
 				echo=self.echo,
@@ -36,11 +72,27 @@ class Column:
 					f'GROUP BY "{self.name}" ORDER BY "count" DESC '
 				)
 			)
-		#result['ratio'] = result['count'] / self.table.num_rows
 		return self._value_counts
+
+	@property
+	def unique_values(self):
+		"""
+		:rtype: list
+		"""
+		return list(self.value_counts['value'].values)
 
 	def __str__(self):
 		return f'"{self.name}" column'
 
 	def __repr__(self):
 		return str(self)
+
+	def __getitem__(self, item):
+		result = self.all_metadata[item]
+		if result is None:
+			raise AttributeError(f"column '{self.name}' has no attribute or metadata '{item}'")
+		else:
+			return result
+
+	def __getattr__(self, item):
+		return self[item]
