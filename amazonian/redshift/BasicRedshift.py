@@ -4,6 +4,7 @@ from numpy import dtype as numpy_dtype
 from pandas import read_sql_query, concat, DataFrame
 from slytherin.numbers import beautify_num
 import psycopg2
+from .get_redshift_create_table_query import get_redshift_create_table_query
 
 class BasicRedshift:
 	def __init__(self, user_id, password, server, database, port='5439'):
@@ -238,7 +239,7 @@ class BasicRedshift:
 
 		return self.get_dataframe(query=union_query + '--\n' + order_query, echo=echo)
 
-	def create_table(self, data, name, schema, index=False, if_exists='replace'):
+	def create_table2(self, data, name, schema, index=False, if_exists='replace'):
 		"""
 		:type data: DataFrame
 		:type name: str
@@ -253,9 +254,17 @@ class BasicRedshift:
 				null_data[col] = None
 			if data[col].dtype in [numpy_dtype('float64'), numpy_dtype('int64')]:
 				max_data[col] = data[col].max()
+			else:
+				max_string_length = int(data[col].str.len().max())
+				max_data[col] = 'x'*(max_string_length+1)
 		temp_data = concat([null_data, max_data])
 		print(temp_data)
 		temp_data.to_sql(name=name, schema=schema, con=self._engine, index=index, if_exists=if_exists)
+
+	def create_table(self, data, name, schema):
+		query = get_redshift_create_table_query(database=self.name, schema=schema, table=name, data=data)
+		self.run(query=query)
+		return query
 
 	def get_errors(self, limit=10, echo=1):
 		"""
