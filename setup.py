@@ -29,7 +29,7 @@ setup(
 	],
 
 	packages=find_packages(exclude=["jupyter_tests", ".idea", ".git"]),
-	install_requires=['numpy', 'pandas', 'sqlalchemy', 'psycopg2', 's3fs', 'slytherin'],
+	install_requires=['numpy', 'pandas', 'sqlalchemy', 'psycopg2-binary', 's3fs'],
 	python_requires='~=3.6',
 	zip_safe=False
 )
