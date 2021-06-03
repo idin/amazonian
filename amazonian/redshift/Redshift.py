@@ -3,7 +3,7 @@ from .Schema import Schema
 from .Table import Table
 from .Column import Column
 from .Snapshot import Snapshot
-from pandas import DataFrame
+
 
 class Redshift(BasicRedshift):
 	def __init__(self, user_id, password, server, database, port='5439', echo=0):

@@ -26,7 +26,8 @@ class S3:
 			files = S3Files(files)
 			files.sort(by=sort_by, reverse=sort_reverse)
 		else:
-			if sort_by is not None: files.sort()
+			if sort_by is not None:
+				files.sort()
 		return files
 
 	def exists(self, path):

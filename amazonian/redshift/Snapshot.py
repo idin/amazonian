@@ -1,6 +1,6 @@
 from datetime import datetime
-from pandas import DataFrame, concat
 import numpy as np
+
 
 class Snapshot:
 	def __init__(self, database):

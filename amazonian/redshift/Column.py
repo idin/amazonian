@@ -1,5 +1,5 @@
 from .Metadata import Metadata
-from pandas import DataFrame
+
 
 class Column:
 	def __init__(self, name, table, echo=None):
