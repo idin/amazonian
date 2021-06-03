@@ -2,9 +2,9 @@ from sqlalchemy import create_engine, text
 import time
 from numpy import dtype as numpy_dtype
 from pandas import read_sql_query, concat, DataFrame
-from slytherin.numbers import beautify_num
 import psycopg2
 from .get_redshift_create_table_query import get_redshift_create_table_query
+
 
 class BasicRedshift:
 	def __init__(self, user_id, password, server, database, port='5439'):
@@ -100,7 +100,7 @@ class BasicRedshift:
 			time_unit = 'seconds'
 
 		if echo:
-			print(f'shape:{result.shape}  elapsed time:{beautify_num(elapsed_time)}{time_unit}')
+			print(f'shape:{result.shape}  elapsed time:{round(elapsed_time, 2)}{time_unit}')
 
 		return result
 
