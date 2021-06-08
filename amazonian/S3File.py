@@ -11,10 +11,10 @@ class S3File:
 			self._dict = dictionary
 
 	KEY_CONVERSION = {
-		'path':'Key',
-		'modified_at':'LastModified',
-		'size':'Size',
-		'etag':'ETag'
+		'path': 'Key',
+		'modified_at': 'LastModified',
+		'size': 'Size',
+		'etag': 'ETag'
 	}
 
 	def get(self, key):

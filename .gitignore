@@ -4,3 +4,7 @@
 amazonian/__pycache__/
 
 amazonian/redshift/__pycache__/
+.ipynb_checkpoints
+amazonian.egg-info
+build
+*.gz

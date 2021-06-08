@@ -8,7 +8,7 @@ def readme():
 
 setup(
 	name='amazonian',
-	version='0.0.3',
+	version='2021.6.8.1',
 	license='MIT',
 
 	url='https://github.com/idin/amazonian',
@@ -29,7 +29,7 @@ setup(
 	],
 
 	packages=find_packages(exclude=["jupyter_tests", ".idea", ".git"]),
-	install_requires=['numpy', 'pandas', 'sqlalchemy', 'psycopg2-binary', 's3fs'],
+	install_requires=['numpy', 'pandas', 'sqlalchemy', 'psycopg2-binary', 's3fs', 'pyspark'],
 	python_requires='~=3.6',
 	zip_safe=False
 )
