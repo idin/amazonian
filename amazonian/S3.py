@@ -10,21 +10,21 @@ from .S3File import S3Files
 
 
 class S3:
-	def __init__(self, key=None, secret=None, iam_role=None, path='s3://', spark=None):
+	def __init__(self, key=None, secret=None, iam_role=None, root='s3://', spark=None):
 		"""
 		starts an S3 connection
 		:type key: str or NoneType
 		:type secret: str or NoneType
 		:type iam_role: str or NoneType
-		:type path: str or NoneType
+		:type root: str or NoneType
 		:type spark: SparkSession or NoneType
 		"""
 		self._key = key
 		self._secret = secret
 		self._iam_role = iam_role
-		if path is None:
-			path = ''
-		self._root = path
+		if root is None:
+			root = ''
+		self._root = root
 		self._spark = spark
 
 	@property
