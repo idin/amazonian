@@ -8,3 +8,5 @@ amazonian/redshift/__pycache__/
 amazonian.egg-info
 build
 *.gz
+dist
+amazonian_lucifer_to_pypi.ipynb

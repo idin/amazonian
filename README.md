@@ -17,6 +17,9 @@ s3 = S3(key=None, secret=None, iam_role=None, root='s3://', spark=spark)
 # get list of files:
 s3.ls(path='some_path')
 
+# get a tree representation of folder structure
+s3.tree(path='some_path')
+
 # get file size:
 s3.get_size(path='some_file')
 

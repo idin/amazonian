@@ -8,7 +8,7 @@ def readme():
 
 setup(
 	name='amazonian',
-	version='2021.6.8.4',
+	version='2021.6.22.4',
 	license='MIT',
 
 	url='https://github.com/idin/amazonian',
