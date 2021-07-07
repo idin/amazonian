@@ -1,5 +1,7 @@
 from warnings import warn
 from s3fs import S3FileSystem
+from time import sleep
+from botocore.exceptions import NoCredentialsError
 from pandas import read_csv
 from pandas import DataFrame as PandasDF
 from pickle import dump as pickle_dump
@@ -106,7 +108,17 @@ class S3:
 
 	def exists(self, path):
 		path = self._get_absolute_path(path)
-		return self.file_system.exists(path=path)
+		exception = RuntimeError('No NoCredentialsError!')
+		for try_number in range(4):
+			try:
+				result = self.file_system.exists(path=path)
+				return result
+			except NoCredentialsError as exception:
+				sleep(2 ** try_number * 0.2)
+
+		raise exception
+
+
 
 	def write_bytes(self, path, bytes):
 		path = self._get_absolute_path(path)
