@@ -8,7 +8,7 @@ def readme():
 
 setup(
 	name='amazonian',
-	version='2021.6.22.4',
+	version='2021.8.20.1',
 	license='MIT',
 
 	url='https://github.com/idin/amazonian',
@@ -29,7 +29,10 @@ setup(
 	],
 
 	packages=find_packages(exclude=["jupyter_tests", ".idea", ".git"]),
-	install_requires=['numpy', 'pandas', 'sqlalchemy', 'psycopg2-binary', 's3fs', 'pyspark', 'botocore'],
+	install_requires=[
+		'numpy', 'pandas', 'sqlalchemy', 'psycopg2-binary', 's3fs>=2021.8.0', 'pyspark',#, 'botocore'
+		#'aiobotocore==1.3.3' #todo check if the new update to s3fs has solved the issue, if yes, remove this line
+	],
 	python_requires='~=3.6',
 	zip_safe=False
 )
