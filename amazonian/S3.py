@@ -1,7 +1,7 @@
 from warnings import warn
 from s3fs import S3FileSystem
 from time import sleep
-from botocore.exceptions import NoCredentialsError
+# from botocore.exceptions import NoCredentialsError
 from pandas import read_csv
 from pandas import DataFrame as PandasDF
 from pickle import dump as pickle_dump
@@ -9,11 +9,12 @@ from pickle import load as pickle_load
 from psycopg2 import connect as psycopg2_connect
 from csv import QUOTE_NONNUMERIC
 from pyspark.sql.dataframe import DataFrame as SparkDF
+from pyspark.sql import SparkSession
 from .S3File import S3Files
 
 
 class S3:
-	def __init__(self, key=None, secret=None, iam_role=None, root='s3://', **kwargs):
+	def __init__(self, key=None, secret=None, iam_role=None, root='s3://', spark=None, **kwargs):
 		"""
 		starts an S3 connection
 		:type key: str or NoneType
@@ -22,12 +23,8 @@ class S3:
 		:type root: str or NoneType
 		:type spark: pyspark.sql.session.SparkSession or NoneType
 		"""
-		if 'spark' in kwargs:
-			_spark = kwargs['spark']
-		elif 'spark' in globals():
-			_spark = globals()['spark']
-		else:
-			_spark = None
+		if spark is None:
+			spark = SparkSession.builder.getOrCreate()
 
 		self._key = key
 		self._secret = secret
@@ -35,7 +32,7 @@ class S3:
 		if root is None:
 			root = ''
 		self._root = root
-		self._spark = _spark
+		self._spark = spark
 
 	@property
 	def root(self):
@@ -109,15 +106,17 @@ class S3:
 	def exists(self, path):
 		path = self._get_absolute_path(path)
 		exception = RuntimeError('No NoCredentialsError!')
-		for try_number in range(4):
+		for try_number in range(1, 5):
 			try:
 				result = self.file_system.exists(path=path)
+				if try_number > 1:
+					print(f'S3 credential issue solved after {try_number} attempts.')
 				return result
-			except NoCredentialsError as exception:
-				sleep(2 ** try_number * 0.2)
+			except: # NoCredentialsError as exception:
+				print(f'S3 credential issue. Attempt {try_number} failed!')
+				sleep(2 ** (try_number - 1) * 0.2)
 
 		raise exception
-
 
 
 	def write_bytes(self, path, bytes):
@@ -381,7 +380,7 @@ class S3:
 		and the read_parquet method is used, otherwise a pickle will be read.
 		:type path: str
 		:type spark: pyspark.sql.session.SparkSession
-		:rtype: bool
+		:rtype: SparkDF or PandasDF or obj
 		"""
 		path = self._get_absolute_path(path)
 
