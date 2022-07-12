@@ -10,3 +10,4 @@ build
 *.gz
 dist
 amazonian_lucifer_to_pypi.ipynb
+.DS_Store
